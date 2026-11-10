@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Streams</title>
+<meta name="theme-color" content="#0b0d13">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Streams">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<script>
+(function (ua, root) {
+  // tv: LG webOS; ios: iPhone/iPad (an iPad says it is a Mac, but has touch); app: opened from the Home Screen.
+  var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var app = window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  root.className = (/webos|web0s|netcast|smarttv/i.test(ua) ? 'tv' : '') + (ios ? ' ios' : '') + (app ? ' app' : '');
+}(navigator.userAgent, document.documentElement));
+</script>
+<link rel="stylesheet" href="/player.css">
+</head>
+<body>
+<video id="video" playsinline></video>
+
+<section id="watch" class="watch hidden" aria-label="Now watching">
+  <div class="watch-bar">
+    <button id="back" class="btn ghost">&#8249; Library</button>
+    <div class="watch-info">
+      <div id="watch-title" class="watch-title"></div>
+      <div id="watch-sub" class="watch-sub"></div>
+    </div>
+    <button id="quality" class="btn quality">Quality</button>
+    <button id="play" class="btn">Retry</button>
+    <button id="fullscreen" class="btn desktop-only">Full screen</button>
+    <button id="stop" class="btn danger">Stop</button>
+  </div>
+  <div class="seekbar">
+    <button id="seek" class="seek" aria-label="Position. Left and right to skip, OK to pause.">
+      <span class="track"><span id="seek-ready" class="ready-part"></span><span id="seek-fill" class="fill"></span></span>
+    </button>
+    <div class="seek-row">
+      <button id="pause" class="btn desktop-only video-only" aria-label="Pause">&#10074;&#10074;</button>
+      <button id="mute" class="btn desktop-only" aria-label="Mute">Sound on</button>
+      <input id="volume" class="volume desktop-only no-ios" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume">
+      <span id="seek-time" class="time"></span>
+      <button id="skip-back" class="btn">&#8722;10s</button>
+      <button id="skip-forward" class="btn">+30s</button>
+    </div>
+  </div>
+  <div id="loader" class="loader">
+    <div class="spinner"></div>
+    <p id="status" role="status"></p>
+  </div>
+</section>
+
+<div id="toast" class="toast-box" role="status" aria-live="polite"></div>
+
+<section id="signin" class="signin hidden" aria-label="Sign in">
+  <div class="signin-box">
+    <div class="brand"><span class="logo"></span><h1>My Streams</h1></div>
+    <div class="signin-body">
+      <img id="signin-qr" class="signin-qr" alt="">
+      <div class="signin-steps">
+        <div id="signin-setup" class="setup hidden">
+          <h2>Welcome! Set up My Streams</h2>
+          <p>Nobody is signed in on this server yet. Make this device the owner's: you can then invite
+            other people and sign in your other devices.</p>
+          <button id="signin-claim" class="btn primary">Set up as owner</button>
+        </div>
+        <h2 id="signin-title">Sign in</h2>
+        <label for="signin-invite" id="signin-invite-label"><b>Got an invite code?</b> Enter it here:</label>
+        <div class="row">
+          <input id="signin-invite" autocomplete="off" spellcheck="false" placeholder="ABCDE-FGHJK">
+          <button id="signin-use" class="btn primary">Sign in</button>
+        </div>
+        <p id="signin-message" class="account-error"></p>
+        <p class="or"><b>Already signed in on your phone?</b> Scan this code with its camera and choose
+          <b>Approve</b>. Or open <b id="signin-link"></b> on it and enter</p>
+        <p id="signin-code" class="code"></p>
+        <p class="muted small">No invite yet? Ask the person who runs this My Streams server.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main id="library" class="library">
+  <header class="top">
+    <div class="brand"><span class="logo"></span><h1>My Streams</h1></div>
+    <button id="now-playing" class="chip hidden"><span class="live-dot"></span><span id="now-playing-name"></span></button>
+    <div class="top-actions">
+      <button id="quality-lib" class="btn ghost quality">Quality</button>
+      <button id="history" class="btn ghost">History</button>
+      <button id="accounts" class="btn ghost">Accounts</button>
+      <button id="people" class="btn ghost hidden">People</button>
+      <button id="manage" class="btn ghost">Manage</button>
+    </div>
+    <button id="add" class="btn primary add">+ Add channel</button>
+  </header>
+  <div id="install" class="install hidden">
+    <img src="/icons/apple-touch-icon.png" alt="" width="52" height="52">
+    <div class="install-text">
+      <b class="install-title">Get My Streams as an app</b>
+      <span>Tap <b>Share</b> <span class="share-glyph" aria-hidden="true"></span>, then <b>Add to Home Screen</b>.
+        Open it from your Home Screen and enter <b id="install-code" class="inline-code"></b></span>
+    </div>
+    <button id="install-close" class="btn ghost" aria-label="Hide">&#10005;</button>
+  </div>
+  <p id="hint" class="hint"></p>
+  <section class="section">
+    <h2 class="section-title"><span class="live-dot"></span>Live now <span id="live-count" class="count"></span></h2>
+    <p id="live-empty" class="empty hidden"></p>
+    <div id="live-grid" class="grid"></div>
+  </section>
+  <section id="continue-section" class="section hidden">
+    <h2 class="section-title">Continue watching</h2>
+    <div id="continue-grid" class="grid"></div>
+  </section>
+  <section id="offline-section" class="section">
+    <h2 class="section-title">Offline <span id="offline-count" class="count"></span></h2>
+    <div id="offline-grid" class="grid"></div>
+  </section>
+  <footer class="foot">
+    <p class="tools">
+      Playback check:
+      <button id="sample" class="link">Sample HLS</button> ·
+      <button id="mp4" class="link">Sample MP4</button> ·
+      <a href="/downloads/my-streams.ipk">TV app (.ipk)</a>
+    </p>
+  </footer>
+</main>
+
+<div id="dialog" class="dialog hidden" role="dialog" aria-labelledby="dialog-title">
+  <div class="panel">
+    <h2 id="dialog-title">Add a channel</h2>
+    <label for="channel">Twitch channel or link</label>
+    <input id="channel" spellcheck="false" autocomplete="off" placeholder="name or twitch.tv/name">
+    <label for="name">Name <span class="muted">(optional)</span></label>
+    <input id="name" autocomplete="off" placeholder="Shown on the card">
+    <div class="row">
+      <button id="start" class="btn primary">Save &amp; watch</button>
+      <button id="save" class="btn">Save</button>
+      <button id="cancel" class="btn ghost">Cancel</button>
+    </div>
+    <p class="muted small">To watch a past broadcast, paste its link (twitch.tv/videos/...) and choose Save &amp; watch.
+      On a computer, the Chrome extension sends the Twitch page you are on in one click.</p>
+  </div>
+</div>
+
+<div id="history-dialog" class="dialog hidden" role="dialog" aria-labelledby="history-title">
+  <div class="panel wide">
+    <h2 id="history-title">Watch history</h2>
+    <p class="muted small">Past broadcasts you watched on any of your screens, newest first, and how far you got.
+      Open one to continue where you stopped.</p>
+    <p id="history-empty" class="empty hidden"></p>
+    <div id="history-list" class="history-list"></div>
+    <div class="row">
+      <button id="history-close" class="btn">Close</button>
+      <button id="history-clear" class="btn danger">Clear history</button>
+    </div>
+  </div>
+</div>
+
+<div id="accounts-dialog" class="dialog hidden" role="dialog" aria-labelledby="accounts-title">
+  <div class="panel wide">
+    <h2 id="accounts-title">Accounts</h2>
+    <p class="muted small">Connect your Twitch account to see everyone you follow who is live.
+      Access is read-only. The one-time setup is easiest from a computer.</p>
+    <div id="account-twitch" class="account"></div>
+    <div class="account">
+      <div class="account-head"><strong>Sign in another device</strong></div>
+      <p class="muted small">For your phone, a computer, or the My Streams app on your iPhone's Home Screen.</p>
+      <div id="device-code" class="device-code hidden">
+        <img id="device-code-qr" class="qr" alt="">
+        <div class="steps">
+          <span>Enter this code on the other device's sign-in screen, or scan it with a phone:</span>
+          <span id="device-code-text" class="code"></span>
+          <span class="muted small">Valid for one hour.</span>
+        </div>
+      </div>
+      <button id="device-code-show" class="btn">Show a sign-in code</button>
+    </div>
+    <div class="row"><button id="accounts-done" class="btn">Done</button>
+      <span id="signed-in-as" class="muted small signed-in"></span>
+      <button id="sign-out" class="btn ghost">Sign out this device</button></div>
+  </div>
+</div>
+
+<div id="people-dialog" class="dialog hidden" role="dialog" aria-labelledby="people-title">
+  <div class="panel wide">
+    <h2 id="people-title">People</h2>
+    <p class="muted small">Everyone has their own streams, accounts and player. Invite someone, then send them the
+      link or let them scan the code. On their TV they scan the code it shows with that phone.</p>
+    <div id="invite" class="invite hidden">
+      <img id="invite-qr" class="qr" alt="">
+      <div>
+        <strong id="invite-name"></strong>
+        <p class="muted small">Send this link, or scan it with their phone. Valid for 7 days. Invite code:</p>
+        <p id="invite-code" class="code"></p>
+        <p id="invite-link" class="invite-link"></p>
+        <button id="invite-done" class="btn">Done</button>
+      </div>
+    </div>
+    <div id="people-list"></div>
+    <div class="row add-person">
+      <input id="person-name" autocomplete="off" placeholder="Name of the person to invite">
+      <button id="person-add" class="btn primary">Invite</button>
+    </div>
+    <p id="people-usage" class="muted small"></p>
+    <h3>Twitch sign-in <span class="muted small">(one-time setup, see README)</span></h3>
+    <div class="account">
+      <div class="account-head"><strong>Twitch</strong><span id="twitch-app-state" class="state"></span></div>
+      <input id="twitch-client-id" spellcheck="false" placeholder="Twitch Client ID">
+      <button id="twitch-app-save" class="btn">Save</button>
+    </div>
+    <p id="people-message" class="account-error"></p>
+    <div class="row"><button id="people-done" class="btn">Done</button></div>
+  </div>
+</div>
+
+<script>var testToken = "__TEST_TOKEN__";</script>
+<script src="/player.js"></script>
+</body>
+</html>

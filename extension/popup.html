@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My Streams</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header>
+  <img src="icons/icon32.png" alt="" width="22" height="22">
+  <strong>My Streams</strong>
+  <button id="settings-toggle" class="icon" title="Server settings" aria-expanded="false">⚙</button>
+</header>
+
+<section id="settings" hidden>
+  <label for="server">Playback server address</label>
+  <input id="server" spellcheck="false" autocomplete="off" placeholder="http://192.168.1.50:8765">
+  <div class="row">
+    <button id="save-server">Save</button>
+    <a id="open-player" href="#" target="_blank">Open player</a>
+  </div>
+</section>
+
+<section id="signin" hidden>
+  <p><b>Sign in this browser</b></p>
+  <div class="pair">
+    <img id="pair-qr" alt="" width="132" height="132">
+    <div>
+      <p class="hint">Scan with your phone and approve, or approve in a browser where you use My Streams.</p>
+      <div id="pair-code" class="pair-code"></div>
+    </div>
+  </div>
+  <div class="row"><button id="pair-open" class="primary">Approve in browser</button></div>
+</section>
+
+<section id="main">
+  <div class="page">
+    <div id="page-title" class="title">…</div>
+    <div id="page-url" class="url"></div>
+  </div>
+  <label for="name">Name on the card</label>
+  <input id="name" autocomplete="off" placeholder="Automatic">
+  <div class="row">
+    <button id="save" class="primary">Save to library</button>
+    <button id="play">Play on TV</button>
+  </div>
+</section>
+
+<div id="now" class="now" hidden>
+  <span class="dot"></span>
+  <span id="now-name"></span>
+  <button id="stop" class="small">Stop</button>
+</div>
+
+<p id="status" role="status"></p>
+<script src="api.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

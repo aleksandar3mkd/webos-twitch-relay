@@ -1,0 +1,23 @@
+{
+  "name": "webos-twitch-relay",
+  "version": "1.0.0",
+  "description": "Twitch on an old LG webOS TV, through a small server on your own network.",
+  "private": true,
+  "scripts": {
+    "build:tv": "python3 tools/build_tv_app.py",
+    "check:tv": "ares-package --check webos",
+    "deploy": "python3 tools/deploy.py",
+    "install:tv": "python3 tools/install_tv.py",
+    "invite": "python3 tools/invite.py",
+    "test": "node tests/player-recovery.cjs && .venv/bin/python -m unittest discover -s tests -q"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@webos-tools/cli": "3.2.6"
+  },
+  "dependencies": {
+    "hls.js": "1.7.4"
+  }
+}

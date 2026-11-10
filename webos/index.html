@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Streams</title>
+<style>
+body { background:#13151c; color:#f4f4fa; font:32px Arial,sans-serif; margin:130px auto; width:1300px; }
+h1 { font-size:64px; } p { line-height:1.5; }
+input,button { font:30px Arial,sans-serif; padding:20px; border:2px solid #8792b5; border-radius:8px; margin:12px 16px 12px 0; }
+input { width:720px; } button { color:white; background:#333e68; }
+:focus { outline:5px solid #c4a0ff; } #status { color:#d6c4ff; }
+.small { color:#bfc7db; font-size:26px; }
+</style>
+</head>
+<body>
+<h1>My Streams</h1>
+<p>Your favourite streams, on your TV.</p>
+<p id="status" role="status">Starting...</p>
+<label for="address">Playback server address</label><br>
+<input id="address" value="" placeholder="http://192.168.1.50:8765" spellcheck="false" autocomplete="off">
+<br><button id="connect">Open player</button><button id="edit">Edit address</button>
+<p class="small">Keep the playback server running and reachable from your TV.</p>
+<script src="server.js"></script>
+<script src="launcher.js"></script>
+</body>
+</html>

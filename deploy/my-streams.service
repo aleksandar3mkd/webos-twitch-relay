@@ -1,0 +1,16 @@
+[Unit]
+Description=My Streams TV playback helper
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/apps/my-streams
+ExecStart=%h/apps/my-streams/.venv/bin/python %h/apps/my-streams/server.py
+Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=15
+
+[Install]
+WantedBy=default.target

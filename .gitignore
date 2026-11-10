@@ -1,0 +1,12 @@
+.venv/
+.runtime/
+__pycache__/
+node_modules/
+build/
+dist/
+.DS_Store
+.env
+.env.*
+!.env.example
+webos/server.js
+data/

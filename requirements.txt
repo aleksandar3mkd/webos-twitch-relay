@@ -1,0 +1,3 @@
+streamlink==8.6.3
+yt-dlp[default]==2026.10.26
+segno==1.6.6

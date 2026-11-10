@@ -1,0 +1,14 @@
+{
+  "id": "com.local.mystreams",
+  "version": "0.1.0",
+  "vendor": "Personal",
+  "type": "web",
+  "main": "index.html",
+  "title": "My Streams",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "appDescription": "Twitch through your own server at home",
+  "resolution": "1920x1080",
+  "bgColor": "#13151c",
+  "iconColor": "#333e68"
+}
